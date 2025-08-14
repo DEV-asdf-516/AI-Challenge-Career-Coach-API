@@ -1,0 +1,79 @@
+services:
+  # Ollama 서버
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-server
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 60s
+      retries: 3
+      start_period: 30s
+
+  # Spring Boot API 서버
+  resume-coach-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT:-9070}
+    container_name: coach
+    ports:
+      - "${PORT:-9070}:${PORT:-9070}"
+    depends_on:
+      ollama:
+        condition: service_healthy
+      model-setup:
+        condition: service_completed_successfully
+    environment:
+      # 데이터베이스 환경변수
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+      # 서버 환경변수
+      - PORT=${PORT:-9070}
+
+      # Ollama 환경변수
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-benedict/linkbricks-llama3.1-korean:8b}
+
+      # Swagger 환경변수
+      - SWAGGER_SERVER_URL=${SWAGGER_SERVER_URL:-http://localhost}
+
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-9070}/actuator/health"]
+      interval: 10s
+      timeout: 60s
+      retries: 3
+      start_period: 60s
+
+  # 모델 초기화 서비스
+  model-setup:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    container_name: model-setup
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "echo '📥 모델 다운로드 시작: ${OLLAMA_MODEL:-benedict/linkbricks-llama3.1-korean:8b}' &&
+       ollama pull ${OLLAMA_MODEL:-benedict/linkbricks-llama3.1-korean:8b} &&
+       echo '✅ 모델 다운로드 완료!'"
+    restart: "no"
+
+volumes:
+  ollama_data:
+    driver: local
