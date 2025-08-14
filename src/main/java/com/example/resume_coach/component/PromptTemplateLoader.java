@@ -17,7 +17,6 @@ public class PromptTemplateLoader {
         return loadResourceFile("prompts/system/" + promptName + ".txt");
     }
 
-
     public String loadUserPromptTemplate(String promptName) {
         return loadResourceFile("prompts/user/" + promptName + ".txt");
     }

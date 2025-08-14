@@ -136,18 +136,6 @@ public class OllamaApiClient {
     }
 
     /**
-     * 기본 Ollama 옵션 생성
-     */
-    private Map<String, Object> createDefaultOptions() {
-        return Map.of(
-                "temperature", 0.7,
-                "top_p", 0.9,
-                "num_predict", 2000,
-                "repeat_penalty", 1.1
-        );
-    }
-
-    /**
      * 창의적 작업용 옵션 (높은 temperature)
      */
     public Map<String, Object> createCreativeOptions() {
@@ -155,34 +143,17 @@ public class OllamaApiClient {
                 "temperature", 0.8,
                 "top_p", 0.9,
                 "num_predict", 2000,
-                "repeat_penalty", 1.1
+                "repeat_penalty", 1.2
         );
     }
 
     public Map<String, Object> createAnalyticalOptions() {
         return Map.of(
-                "temperature", 0.3,
-                "top_p", 0.8,
+                "temperature", 0.7,
+                "top_p", 0.7,
                 "num_predict", 2000,
-                "repeat_penalty", 1.0
+                "repeat_penalty", 1.1
         );
-    }
-
-    /**
-     * API 호출 실패 시 fallback 응답 생성
-     */
-    private String generateFallbackResponse() {
-        return """
-                {
-                  "error": "Ollama 서비스 연결 실패",
-                  "message": "현재 AI 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
-                  "troubleshooting": [
-                    "Ollama 서버가 실행 중인지 확인: ollama serve",
-                    "모델이 다운로드되었는지 확인: ollama list",
-                    "네트워크 연결 상태 확인"
-                  ]
-                }
-                """;
     }
 
     /**

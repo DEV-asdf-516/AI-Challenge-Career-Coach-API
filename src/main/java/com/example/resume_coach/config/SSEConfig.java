@@ -8,10 +8,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 public class SSEConfig {
     @Bean
     public ThreadPoolTaskScheduler sseKeepAliveScheduler() {
-        ThreadPoolTaskScheduler ts = new ThreadPoolTaskScheduler();
-        ts.setPoolSize(4);
-        ts.setThreadNamePrefix("sse-keepalive-");
-        ts.initialize();
-        return ts;
+        ThreadPoolTaskScheduler pool = new ThreadPoolTaskScheduler();
+        pool.setPoolSize(4);
+        pool.setThreadNamePrefix("sse-keepalive-");
+        pool.initialize();
+        return pool;
     }
 }

@@ -43,10 +43,10 @@ public class DataInitializer implements CommandLineRunner {
                     .writerWithDefaultPrettyPrinter()
                     .writeValueAsString(jsonData);
 
-            interviewSystemPrompt = promptTemplateLoader.loadSystemPrompt("interview_system").replace("${jobs}", prettyJobDataJson);
-            learningSystemPrompt = promptTemplateLoader.loadSystemPrompt("learning_system").replace("${jobs}", prettyJobDataJson);
-            interviewUserPrompt = promptTemplateLoader.loadUserPromptTemplate("interview_user");
-            learningUserPrompt = promptTemplateLoader.loadUserPromptTemplate("learning_user");
+            interviewSystemPrompt = promptTemplateLoader.loadSystemPrompt("interview_system_v1").replace("${jobs}", prettyJobDataJson);
+            learningSystemPrompt = promptTemplateLoader.loadSystemPrompt("learning_system_v1").replace("${jobs}", prettyJobDataJson);
+            interviewUserPrompt = promptTemplateLoader.loadUserPromptTemplate("interview_user_v1");
+            learningUserPrompt = promptTemplateLoader.loadUserPromptTemplate("learning_user_v1");
 
             log.info(interviewSystemPrompt);
             log.info(learningSystemPrompt);

@@ -1,6 +1,5 @@
 package com.example.resume_coach.service;
 
-
 import com.example.resume_coach.component.DataInitializer;
 import com.example.resume_coach.component.OllamaApiClient;
 import com.example.resume_coach.handler.StreamHandler;
@@ -54,34 +53,37 @@ public class AICareerCoachService {
     }
 
     public ResumeDto.MockInterviewResponse parseInterviewResponse(String aiResponse, String resumeId) {
+        String jsonPart = ollamaApiClient.extractJsonFromResponse(aiResponse);
         try {
-            String jsonPart = ollamaApiClient.extractJsonFromResponse(aiResponse);
             JsonNode jsonNode = objectMapper.readTree(jsonPart);
 
             List<ResumeDto.MockInterviewResponse.InterviewQuestion> questions = new ArrayList<>();
             JsonNode questionsArray = jsonNode.get("questions");
 
-            if (questionsArray != null && questionsArray.isArray()) {
-                for (JsonNode questionNode : questionsArray) {
-                    ResumeDto.MockInterviewResponse.InterviewQuestion question =
-                            new ResumeDto.MockInterviewResponse.InterviewQuestion();
-
-                    question.setQuestion(questionNode.get("question").asText());
-                    question.setCategory(questionNode.get("category").asText());
-                    question.setExpectedAnswerDirection(questionNode.get("expectedAnswerDirection").asText());
-                    question.setDifficulty(questionNode.get("difficulty").asText());
-
-                    if (questionNode.has("personalizationReason")) {
-                        String enhanced = question.getExpectedAnswerDirection() +
-                                " [개인화 근거: " + questionNode.get("personalizationReason").asText() + "]";
-                        question.setExpectedAnswerDirection(enhanced);
-                    }
-
-                    questions.add(question);
-                }
+            if (questionsArray == null || !questionsArray.isArray()) {
+                log.warn("면접 질문이 없거나 잘못된 형식입니다. AI 응답: {}", aiResponse);
+                return createInterviewFallbackResponse(resumeId, jsonPart);
             }
-            String difficulty = jsonNode.get("overallDifficulty").asText();
 
+            for (JsonNode questionNode : questionsArray) {
+                ResumeDto.MockInterviewResponse.InterviewQuestion question =
+                        new ResumeDto.MockInterviewResponse.InterviewQuestion();
+
+                question.setQuestion(questionNode.get("question").asText());
+                question.setCategory(questionNode.get("category").asText());
+                question.setExpectedAnswerDirection(questionNode.get("expectedAnswerDirection").asText());
+                question.setDifficulty(questionNode.get("difficulty").asText());
+
+                if (questionNode.has("personalizationReason")) {
+                    String enhanced = question.getExpectedAnswerDirection() +
+                            " [개인화 근거: " + questionNode.get("personalizationReason").asText() + "]";
+                    question.setExpectedAnswerDirection(enhanced);
+                }
+
+                questions.add(question);
+            }
+
+            String difficulty = jsonNode.get("overallDifficulty").asText();
             String focusArea = jsonNode.get("focusArea").asText();
 
             if (jsonNode.has("interviewStrategy")) {
@@ -92,19 +94,20 @@ public class AICareerCoachService {
                     resumeId,
                     questions,
                     difficulty,
-                    focusArea
+                    focusArea,
+                    ""
             );
 
         } catch (Exception e) {
             log.error("면접 질문 응답 파싱 실패", e);
-            return createInterviewFallbackResponse(resumeId);
+            return createInterviewFallbackResponse(resumeId, jsonPart);
         }
     }
 
 
     public ResumeDto.LearningPathResponse parseLearningPathResponse(String aiResponse, String resumeId) {
+        String jsonPart = ollamaApiClient.extractJsonFromResponse(aiResponse);
         try {
-            String jsonPart = ollamaApiClient.extractJsonFromResponse(aiResponse);
             JsonNode jsonNode = objectMapper.readTree(jsonPart);
 
             List<ResumeDto.LearningPathResponse.LearningStep> learningSteps = new ArrayList<>();
@@ -112,7 +115,7 @@ public class AICareerCoachService {
 
             if (stepsArray == null || !stepsArray.isArray()) {
                 log.warn("학습 단계가 없거나 잘못된 형식입니다. AI 응답: {}", aiResponse);
-                return createLearningPathFallbackResponse(resumeId);
+                return createLearningPathFallbackResponse(resumeId, jsonPart);
             }
 
             for (JsonNode stepNode : stepsArray) {
@@ -158,12 +161,13 @@ public class AICareerCoachService {
                     currentLevel,
                     targetLevel,
                     learningSteps,
-                    timeframe
+                    timeframe,
+                    ""
             );
 
         } catch (Exception e) {
             log.error("학습 경로 응답 파싱 실패", e);
-            return createLearningPathFallbackResponse(resumeId);
+            return createLearningPathFallbackResponse(resumeId, jsonPart);
         }
     }
 
@@ -177,7 +181,7 @@ public class AICareerCoachService {
                 .replace("${skills}", resume.getSkills());
     }
 
-    private ResumeDto.MockInterviewResponse createInterviewFallbackResponse(String resumeId) {
+    private ResumeDto.MockInterviewResponse createInterviewFallbackResponse(String resumeId, String result) {
         List<ResumeDto.MockInterviewResponse.InterviewQuestion> questions = List.of(
                 new ResumeDto.MockInterviewResponse.InterviewQuestion(
                         "AI 서비스 장애가 발생하였습니다.",
@@ -191,11 +195,12 @@ public class AICareerCoachService {
                 resumeId,
                 questions,
                 "서비스 장애",
-                "AI 서비스 일시 중단"
+                "AI 서비스 일시 중단",
+                result
         );
     }
 
-    private ResumeDto.LearningPathResponse createLearningPathFallbackResponse(String resumeId) {
+    private ResumeDto.LearningPathResponse createLearningPathFallbackResponse(String resumeId, String result) {
         List<ResumeDto.LearningPathResponse.LearningStep> steps = List.of(
                 new ResumeDto.LearningPathResponse.LearningStep(
                         "AI 서비스 장애",
@@ -212,7 +217,8 @@ public class AICareerCoachService {
                 "서비스 장애",
                 "정상 서비스",
                 steps,
-                "잠시 후"
+                "잠시 후",
+                result
         );
     }
 }

@@ -77,7 +77,9 @@ public class ResumeController {
     @GetMapping("/resumes/{id}")
     public ResponseEntity<ResumeDto.Response> getResume(@PathVariable String id) {
         log.info("이력서 조회 API 호출: ID = {}", id);
-        return resumeService.getResume(id).map(resume -> ResponseEntity.ok(resume)).orElse(ResponseEntity.notFound().build());
+        return resumeService.getResume(id)
+                .map(resume -> ResponseEntity.ok(resume))
+                .orElse(ResponseEntity.notFound().build());
     }
 
 

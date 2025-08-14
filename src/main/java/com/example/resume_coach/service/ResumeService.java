@@ -8,7 +8,6 @@ import com.example.resume_coach.repository.ResumeRepository;
 import com.example.resume_coach.repository.entity.Resume;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +52,6 @@ public class ResumeService {
     }
 
 
-    @CacheEvict(cacheNames = {"interviewQuestions", "learningPaths"}, key = "#id")
     public ResumeDto.Response updateResume(String id, ResumeDto.CreateRequest request) {
         log.info("이력서 수정 요청: ID = {}", id);
 
@@ -73,7 +71,6 @@ public class ResumeService {
         return convertToResponse(updatedResume);
     }
 
-    @CacheEvict(cacheNames = {"interviewQuestions", "learningPaths"}, key = "#id")
     public void deleteResume(String id) {
         log.info("이력서 삭제 요청: ID = {}", id);
 
@@ -86,17 +83,15 @@ public class ResumeService {
     }
 
 
-
     @Async("aiServiceExecutor")
     public void generateMockInterviewStream(String resumeId, boolean emitDeltas, SseEmitter emitter, SSEHeartBeatManager heartBeat) throws IOException {
         log.info("🎯 개인 맞춤형 면접 질문 생성 요청 : 이력서 ID = {}", resumeId);
-        try{
+        try {
             Resume resume = resumeRepository.findById(resumeId).orElseThrow(() -> new RuntimeException("이력서를 찾을 수 없습니다: " + resumeId));
             Function<String, ResumeDto.MockInterviewResponse> parser = full -> aiService.parseInterviewResponse(full, resumeId);
             StreamHandler handler = new SSEOllamaStreamHandler<>(emitter, parser, emitDeltas, heartBeat);
             aiService.generateMockInterviewQuestionsStream(resume, handler);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             log.error("면접 질문 생성 중 오류 발생", e);
             emitter.send(SseEmitter.event().name("error").data("면접 질문 생성 중 오류: " + e.getMessage()));
             emitter.completeWithError(e);
@@ -104,20 +99,19 @@ public class ResumeService {
     }
 
 
-   @Async("aiServiceExecutor")
+    @Async("aiServiceExecutor")
     public void generateLearningPathStream(String resumeId, boolean emitDeltas, SseEmitter emitter, SSEHeartBeatManager heartBeat) throws IOException {
         log.info("🎯 개인 맞춤형 학습 경로 생성 요청: 이력서 ID = {}", resumeId);
-       try {
-           Resume resume = resumeRepository.findById(resumeId).orElseThrow(() -> new RuntimeException("이력서를 찾을 수 없습니다: " + resumeId));
-           Function<String, ResumeDto.LearningPathResponse> parser = full -> aiService.parseLearningPathResponse(full, resumeId);
-           StreamHandler handler = new SSEOllamaStreamHandler<>(emitter, parser, emitDeltas, heartBeat);
-           aiService.generateLearningPathStream(resume, handler);
-       }
-       catch(Exception e){
-           log.error("맞춤형 학습 경로 생성 중 오류 발생", e);
-           emitter.send(SseEmitter.event().name("error").data("면접 질문 생성 중 오류: " + e.getMessage()));
-           emitter.completeWithError(e);
-       }
+        try {
+            Resume resume = resumeRepository.findById(resumeId).orElseThrow(() -> new RuntimeException("이력서를 찾을 수 없습니다: " + resumeId));
+            Function<String, ResumeDto.LearningPathResponse> parser = full -> aiService.parseLearningPathResponse(full, resumeId);
+            StreamHandler handler = new SSEOllamaStreamHandler<>(emitter, parser, emitDeltas, heartBeat);
+            aiService.generateLearningPathStream(resume, handler);
+        } catch (Exception e) {
+            log.error("맞춤형 학습 경로 생성 중 오류 발생", e);
+            emitter.send(SseEmitter.event().name("error").data("면접 질문 생성 중 오류: " + e.getMessage()));
+            emitter.completeWithError(e);
+        }
     }
 
     private ResumeDto.Response convertToResponse(Resume resume) {

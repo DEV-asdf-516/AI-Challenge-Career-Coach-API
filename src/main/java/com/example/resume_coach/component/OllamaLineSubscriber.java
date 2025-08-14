@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Flow;
 
 @RequiredArgsConstructor
+@Slf4j
 public class OllamaLineSubscriber implements Flow.Subscriber<String> {
 
     private static final long REQUEST_BATCH = 32;
@@ -55,11 +57,10 @@ public class OllamaLineSubscriber implements Flow.Subscriber<String> {
                 subscription.request(REQUEST_BATCH);
                 consumedSinceRequest = 0;
             }
-        } catch (Exception ignore) {
-
         }
-
-
+        catch (Exception ignore) {
+            log.warn("Error processing line: " + line, ignore);
+        }
     }
 
     @Override

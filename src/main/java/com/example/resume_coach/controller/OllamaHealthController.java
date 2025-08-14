@@ -16,15 +16,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class OllamaHealthController {
+
     private final OllamaApiClient ollamaApiClient;
 
-    @GetMapping(path="/greeting",produces="text/event-stream;charset=UTF-8")
+    @GetMapping(path = "/greeting", produces = "text/event-stream;charset=UTF-8")
     public SseEmitter testOllamaGeneration() {
         SseEmitter emitter = new SseEmitter();
         ollamaApiClient.callOllamaStream(
                 "안녕하세요! 2줄 이내의 간단한 자기소개를 해주세요.",
                 Map.of("num_predict", 100, "temperature", 0.2),
-                new SSEOllamaStreamHandler(emitter,null,true,null)
+                new SSEOllamaStreamHandler(emitter, null, false, null)
         );
         return emitter;
     }

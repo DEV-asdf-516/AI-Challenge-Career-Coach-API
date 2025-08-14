@@ -93,6 +93,8 @@ public class ResumeDto {
         @Schema(description = "주요 포커스 영역", example = "백엔드 기술스택")
         private String focusArea;
 
+        private String errorMessage;
+
         @Data
         @NoArgsConstructor
         @AllArgsConstructor
@@ -137,7 +139,9 @@ public class ResumeDto {
         
         @Schema(description = "전체 예상 기간", example = "8-12개월")
         private String estimatedTimeframe;
-        
+
+        private String errorMessage;
+
         @Data
         @NoArgsConstructor
         @AllArgsConstructor
