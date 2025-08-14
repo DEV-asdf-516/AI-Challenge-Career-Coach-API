@@ -143,16 +143,16 @@ public class OllamaApiClient {
                 "temperature", 0.8,
                 "top_p", 0.9,
                 "num_predict", 2000,
-                "repeat_penalty", 1.2
+                "repeat_penalty", 1.1
         );
     }
 
     public Map<String, Object> createAnalyticalOptions() {
         return Map.of(
-                "temperature", 0.7,
-                "top_p", 0.7,
+                "temperature", 0.3,
+                "top_p", 0.8,
                 "num_predict", 2000,
-                "repeat_penalty", 1.1
+                "repeat_penalty", 1.0
         );
     }
 
