@@ -137,7 +137,8 @@ Content-Type: text/event-stream
 5. **🔒 안전한 프롬프트**: 인젝션 방지 및 보안 메커니즘
 6. **📖 완벽한 문서화**: Swagger 기반 API 문서 자동 생성
 
---
+---
+
 ## 🚀 실행 방법
 
 ### 🐳 Docker를 이용한 간편 실행 
