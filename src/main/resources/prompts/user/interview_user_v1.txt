@@ -10,7 +10,7 @@
 - 기술스킬: ${skills}
 
 ## JSON 응답 형식
-```
+```json
 {
   "questions": [
     {

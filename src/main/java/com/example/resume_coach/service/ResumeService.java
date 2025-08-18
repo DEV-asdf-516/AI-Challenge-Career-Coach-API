@@ -1,6 +1,7 @@
 package com.example.resume_coach.service;
 
 import com.example.resume_coach.component.SSEHeartBeatManager;
+import com.example.resume_coach.handler.OllamaResponseHandler;
 import com.example.resume_coach.handler.SSEOllamaStreamHandler;
 import com.example.resume_coach.handler.StreamHandler;
 import com.example.resume_coach.model.ResumeDto;
@@ -90,7 +91,14 @@ public class ResumeService {
             Resume resume = resumeRepository.findById(resumeId).orElseThrow(() -> new RuntimeException("이력서를 찾을 수 없습니다: " + resumeId));
             Function<String, ResumeDto.MockInterviewResponse> parser = full -> aiService.parseInterviewResponse(full, resumeId);
             StreamHandler handler = new SSEOllamaStreamHandler<>(emitter, parser, emitDeltas, heartBeat);
-            aiService.generateMockInterviewQuestionsStream(resume, handler);
+            OllamaResponseHandler responseHandler = aiService.generateMockInterviewQuestionsStream(resume, handler);
+            emitter.onTimeout(() -> {
+                responseHandler.cancel();
+                emitter.completeWithError(new java.util.concurrent.TimeoutException("SSE timeout"));
+            });
+            emitter.onError(e -> {
+                responseHandler.cancel();
+            });
         } catch (Exception e) {
             log.error("면접 질문 생성 중 오류 발생", e);
             emitter.send(SseEmitter.event().name("error").data("면접 질문 생성 중 오류: " + e.getMessage()));
@@ -106,7 +114,14 @@ public class ResumeService {
             Resume resume = resumeRepository.findById(resumeId).orElseThrow(() -> new RuntimeException("이력서를 찾을 수 없습니다: " + resumeId));
             Function<String, ResumeDto.LearningPathResponse> parser = full -> aiService.parseLearningPathResponse(full, resumeId);
             StreamHandler handler = new SSEOllamaStreamHandler<>(emitter, parser, emitDeltas, heartBeat);
-            aiService.generateLearningPathStream(resume, handler);
+            OllamaResponseHandler responseHandler = aiService.generateLearningPathStream(resume, handler);
+            emitter.onTimeout(() -> {
+                responseHandler.cancel();
+                emitter.completeWithError(new java.util.concurrent.TimeoutException("SSE timeout"));
+            });
+            emitter.onError(e -> {
+                responseHandler.cancel();
+            });
         } catch (Exception e) {
             log.error("맞춤형 학습 경로 생성 중 오류 발생", e);
             emitter.send(SseEmitter.event().name("error").data("면접 질문 생성 중 오류: " + e.getMessage()));

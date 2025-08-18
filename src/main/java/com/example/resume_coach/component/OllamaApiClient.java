@@ -1,5 +1,6 @@
 package com.example.resume_coach.component;
 
+import com.example.resume_coach.handler.OllamaResponseHandler;
 import com.example.resume_coach.handler.StreamHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,19 +41,18 @@ public class OllamaApiClient {
     @Value("${ollama.api.timeout.read:600}")
     private int readTimeoutSeconds;
 
-
-    public CompletableFuture<Void> callOllamaStream(String prompt, Map<String, Object> options, StreamHandler handler) {
+    public OllamaResponseHandler callOllamaStream(String prompt, Map<String, Object> options, StreamHandler handler) {
         try {
             String requestBody = createChatRequestBodyJson(prompt, options, true);
             return callOllamaStreamInternal(requestBody, prompt, handler);
         } catch (JsonProcessingException e) {
             handler.onError(e);
-            return CompletableFuture.failedFuture(e);
+            return new OllamaResponseHandler(CompletableFuture.failedFuture(e), null);
         }
     }
 
 
-    public CompletableFuture<Void> callOllamaStream(
+    public OllamaResponseHandler callOllamaStream(
             String systemPrompt,
             String prompt,
             Map<String, Object> options,
@@ -63,11 +63,11 @@ public class OllamaApiClient {
             return callOllamaStreamInternal(requestBody, prompt, handler);
         } catch (JsonProcessingException e) {
             handler.onError(e);
-            return CompletableFuture.failedFuture(e);
+           return new OllamaResponseHandler(CompletableFuture.failedFuture(e), null);
         }
     }
 
-    public CompletableFuture<Void> callOllamaStreamInternal(
+    public OllamaResponseHandler callOllamaStreamInternal(
             String requestBody,
             String prompt,
             StreamHandler handler
@@ -84,11 +84,10 @@ public class OllamaApiClient {
                     .build();
 
             log.info("Ollama API 스트리밍 호출 시작 - 프롬프트 길이: {}", prompt.length());
-            return httpClient.sendAsync(
+            OllamaLineSubscriber subscriber = new OllamaLineSubscriber(objectMapper, handler);
+            CompletableFuture<Void> future =  httpClient.sendAsync(
                     request,
-                    HttpResponse.BodyHandlers.fromLineSubscriber(
-                            new OllamaLineSubscriber(objectMapper, handler)
-                    )
+                    HttpResponse.BodyHandlers.fromLineSubscriber(subscriber)
             ).thenAccept(
                     response -> {
                         if (response.statusCode() != HttpStatus.OK.value()) {
@@ -96,10 +95,10 @@ public class OllamaApiClient {
                             handler.onError(new RuntimeException("HTTP Status " + response.statusCode()));
                         }
                     });
-
+            return new OllamaResponseHandler(future, subscriber);
         } catch (Exception e) {
             handler.onError(e);
-            return CompletableFuture.failedFuture(e);
+            return new OllamaResponseHandler(CompletableFuture.failedFuture(e), null);
         }
     }
 

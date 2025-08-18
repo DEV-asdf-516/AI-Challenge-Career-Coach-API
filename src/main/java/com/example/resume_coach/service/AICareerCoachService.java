@@ -2,6 +2,7 @@ package com.example.resume_coach.service;
 
 import com.example.resume_coach.component.DataInitializer;
 import com.example.resume_coach.component.OllamaApiClient;
+import com.example.resume_coach.handler.OllamaResponseHandler;
 import com.example.resume_coach.handler.StreamHandler;
 import com.example.resume_coach.model.ResumeDto;
 import com.example.resume_coach.repository.entity.Resume;
@@ -24,7 +25,7 @@ public class AICareerCoachService {
     private final OllamaApiClient ollamaApiClient;
     private final ObjectMapper objectMapper;
 
-    public CompletableFuture<Void> generateMockInterviewQuestionsStream(
+    public OllamaResponseHandler generateMockInterviewQuestionsStream(
             Resume resume,
             StreamHandler handler
     ) {
@@ -39,7 +40,7 @@ public class AICareerCoachService {
     }
 
 
-    public CompletableFuture<Void> generateLearningPathStream(
+    public OllamaResponseHandler generateLearningPathStream(
             Resume resume,
             StreamHandler handler) {
         log.info("개인 맞춤형 학습 경로 생성 시작: 이력서 ID = {}", resume.getId());

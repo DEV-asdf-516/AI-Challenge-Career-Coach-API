@@ -7,6 +7,7 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+      - models_data:/models
     environment:
       - OLLAMA_HOST=0.0.0.0
     restart: unless-stopped
@@ -58,22 +59,24 @@ services:
 
   # 모델 초기화 서비스
   model-setup:
-    image: ollama/ollama:latest
-    volumes:
-      - ollama_data:/root/.ollama
-    container_name: model-setup
+    build: # ⬅️ 로컬에서 모델-세팅 이미지 생성
+      context: .
+      dockerfile: Dockerfile.model-setup
+    container_name: ollama-model-setup
     depends_on:
       ollama:
         condition: service_healthy
     environment:
-      - OLLAMA_HOST=ollama:11434
-    entrypoint: ["/bin/sh", "-c"]
-    command: >
-      "echo '📥 모델 다운로드 시작: ${OLLAMA_MODEL:-benedict/linkbricks-llama3.1-korean:8b}' &&
-       ollama pull ${OLLAMA_MODEL:-benedict/linkbricks-llama3.1-korean:8b} &&
-       echo '✅ 모델 다운로드 완료!'"
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-benedict/linkbricks-llama3.1-korean:8b}
+      - OLLAMA_HOST_URL=http://ollama:11434
+      - HF_TOKEN=${HF_TOKEN:-}
+    volumes:
+      - models_data:/models
     restart: "no"
 
 volumes:
   ollama_data:
+    driver: local
+  # ⬇️ 추가: GGUF/Modelfile 공유 저장용
+  models_data:
     driver: local

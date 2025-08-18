@@ -26,3 +26,6 @@ target/
 *.sh
 *.bat
 
+__pycache__/
+build/
+node_modules/

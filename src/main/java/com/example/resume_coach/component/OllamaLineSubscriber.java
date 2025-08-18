@@ -2,7 +2,6 @@ package com.example.resume_coach.component;
 
 import com.example.resume_coach.handler.StreamHandler;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import lombok.RequiredArgsConstructor;
@@ -57,22 +56,35 @@ public class OllamaLineSubscriber implements Flow.Subscriber<String> {
                 subscription.request(REQUEST_BATCH);
                 consumedSinceRequest = 0;
             }
-        }
-        catch (Exception ignore) {
+        } catch (Exception ignore) {
             log.warn("Error processing line: " + line, ignore);
         }
     }
 
     @Override
     public void onError(Throwable throwable) {
-        flushBatch();
-        handler.onError(throwable);
+        try {
+            flushBatch();
+            handler.onError(throwable);
+        } finally {
+            cancel();
+            onComplete();
+        }
     }
 
     @Override
     public void onComplete() {
         flushBatch();
+        cancel();
         handler.onComplete();
+    }
+
+
+    public void cancel() {
+        try {
+            if (subscription != null) subscription.cancel();
+        } catch (Throwable ignore) {
+        }
     }
 
     private void flushBatch() {
@@ -86,7 +98,6 @@ public class OllamaLineSubscriber implements Flow.Subscriber<String> {
             handler.onError(e);
         }
     }
-
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class Chunk {

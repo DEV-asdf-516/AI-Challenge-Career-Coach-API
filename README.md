@@ -161,8 +161,15 @@ DB_PASSWORD=1234
 
 OLLAMA_BASE_URL=http://ollama:11434
 OLLAMA_MODEL=benedict/linkbricks-llama3.1-korean:8b
-# GPU가 없는 환경이라면 아래 모델을 추천합니다.
+
+# GPU가 없는 환경이라면 아래 두 모델을 추천합니다.
+# 별도의 설정 없이 곧바로 확인할 수 있습니다. 모델 성능이 조금 떨어질 수 있습니다.
 # OLLAMA_MODEL=llama3.2:3b
+
+# 다음 모델 사용 시 HF_TOKEN 환경변수 설정이 필요합니다. 
+# https://huggingface.co/settings/tokens 에 접속해 토큰을 발급 받으세요. 
+# OLLAMA_MODEL=llama3-instruct-kor-8b-q4km  
+# HF_TOKEN=<your_huggingface_token_here>
 
 SWAGGER_SERVER_URL=http://localhost
 EOF

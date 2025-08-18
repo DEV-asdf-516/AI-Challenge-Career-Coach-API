@@ -1,0 +1,22 @@
+# Dockerfile.model-setup
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    HF_HUB_ENABLE_PROGRESS_BARS=1 \
+    HF_HUB_ENABLE_HF_TRANSFER=1 \
+    HF_HUB_DISABLE_TELEMETRY=1
+
+# (선택) 디버깅용 curl이 필요하면 주석 해제
+# RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# 필요한 파이썬 의존성만 최소 설치
+RUN pip install --no-cache-dir "huggingface_hub==0.24.6" "hf_transfer>=0.1.8" requests
+
+# model setup 스크립트만 복사
+COPY scripts/model_setup.py /app/model_setup.py
+
+# 런타임에 주입되는 환경변수: OLLAMA_HOST_URL, OLLAMA_MODEL, HF_TOKEN
+ENTRYPOINT ["python", "/app/model_setup.py"]
