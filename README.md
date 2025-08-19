@@ -590,12 +590,12 @@ OLLAMA_MODEL=benedict/linkbricks-llama3.1-korean:8b
 # 별도의 설정 없이 곧바로 확인할 수 있습니다. 모델 성능이 조금 떨어질 수 있습니다.
 # 느린 응답(10 ~ 12분), 정확도 높음
 # OLLAMA_MODEL=qwen2.5:7b-instruct 
-# 빠른 응답(4~5분), 정확도 낮음
+# 빠른 응답(4 ~ 5분), 정확도 낮음
 # OLLAMA_MODEL=llama3.2:3b 
 
 # 다음 모델 사용 시 HF_TOKEN 환경변수 설정이 필요합니다. 
 # https://huggingface.co/settings/tokens 에 접속해 토큰을 발급 받으세요. 
-# 빠른 응답(4~5분), 정확도 중간
+# 빠른 응답(4 ~ 5분), 정확도 중간
 # OLLAMA_MODEL=llama3-instruct-kor-8b-q4km  
 # HF_TOKEN=<your_huggingface_token_here>
 
