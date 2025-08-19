@@ -11,7 +11,7 @@ spring:
 
   mvc:
     async:
-      request-timeout: 910000
+      request-timeout: 1810000
 
   # H2 콘솔 설정
   h2:
@@ -51,7 +51,7 @@ ollama:
     end-point: /api/chat
     timeout:
       connect: 30
-      read: 900
+      read: 1800
   model: ${OLLAMA_MODEL:benedict/linkbricks-llama3.1-korean:8b}
 
 # AI 서비스 공급자

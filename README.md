@@ -142,7 +142,7 @@ Content-Type: text/event-stream
 ---
 ## 📄 응답 예제
 
-> qwen2.5:7b-instruct 모델을 사용한 면접 질문 생성 예시
+> 시스템 및 사용자 프롬프트 v1, qwen2.5:7b-instruct 모델을 사용한 면접 질문 생성 예시
 
 ### 0. 사용자 이력서 생성
 - 요청 JSON
@@ -588,10 +588,14 @@ OLLAMA_MODEL=benedict/linkbricks-llama3.1-korean:8b
 
 # GPU가 없는 환경이라면 아래 세 모델을 추천합니다.
 # 별도의 설정 없이 곧바로 확인할 수 있습니다. 모델 성능이 조금 떨어질 수 있습니다.
+# 느린 응답(10 ~ 12분), 정확도 높음
 # OLLAMA_MODEL=qwen2.5:7b-instruct 
+# 빠른 응답(4~5분), 정확도 낮음
 # OLLAMA_MODEL=llama3.2:3b 
+
 # 다음 모델 사용 시 HF_TOKEN 환경변수 설정이 필요합니다. 
 # https://huggingface.co/settings/tokens 에 접속해 토큰을 발급 받으세요. 
+# 빠른 응답(4~5분), 정확도 중간
 # OLLAMA_MODEL=llama3-instruct-kor-8b-q4km  
 # HF_TOKEN=<your_huggingface_token_here>
 

@@ -73,7 +73,7 @@ public class OllamaApiClient {
             StreamHandler handler
     ) {
         try {
-            String chatApiUrl = ollamaBaseUrl + ollamaEndPoint;
+            final String chatApiUrl = ollamaBaseUrl + ollamaEndPoint;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(chatApiUrl))
                     .header("Accept", "application/x-ndjson")
