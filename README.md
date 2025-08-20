@@ -574,7 +574,7 @@ Docker Compose를 사용하면 Ollama와 애플리케이션을 한 번에 실행
 ```bash
 # 1. 프로젝트 클론
 git clone https://github.com/DEV-asdf-516/AI-Challenge-Career-Coach-API.git
-cd resume-coach-api
+cd AI-Challenge-Career-Coach-API
 
 # 2. 환경 설정 파일 생성
 cat > .env << EOF
