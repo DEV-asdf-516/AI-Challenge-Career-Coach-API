@@ -158,39 +158,12 @@ def main():
             upload_blob_with_digest(gguf, digest)
             log("✅ blob 업로드 완료")
 
-        # Modelfile 문자열(우리 템플릿/파라미터 보존)
-        modelfile_text = f"""FROM {fname}
-
-SYSTEM \"\"\"당신은 친절하고 간결하게 답변하는 한국어 AI 어시스턴트입니다.
-질문에 맞춰 핵심만 답변하며, 불필요한 장황함은 피하세요.
-모든 답변은 반드시 한국어로 작성합니다.
-\"\"\"
-
-TEMPLATE \"\"\"{{{{- if .System }}}}
-<s>[INST] <<SYS>>
-{{{{ .System }}}}
-<</SYS>>
-
-{{{{ .Prompt }}}} [/INST]
-{{{{- else }}}}
-[INST] {{{{ .Prompt }}}} [/INST]
-{{{{- end }}}}
-\"\"\"
-
-PARAMETER temperature 0.6
-PARAMETER num_predict 256
-PARAMETER num_ctx 4096
-PARAMETER stop <s>
-PARAMETER stop </s>
-PARAMETER stop <|eot_id|>
-"""
-
-        # /api/create 호출 (files 매핑 + modelfile 문자열)
+        # /api/create 호출
         payload = {
             "model": NAME,
-            "files": { fname: digest },  # ← 필수
-            "modelfile": modelfile_text  # ← 선택(있으면 시스템/템플릿/파라미터 적용)
+            "files": { fname: digest }  # ← 필수
         }
+
         log("🏗️ Ollama 모델 생성 시작 (/api/create)")
         stream_post("/api/create", payload)
         log(f"✅ 모델 생성 완료: {NAME}")
