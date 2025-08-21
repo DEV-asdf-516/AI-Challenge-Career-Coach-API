@@ -3,6 +3,9 @@
 > **[2025 AI Challenge Back-End 개발 과제](https://xg18kywe.ninehire.site/job_posting/HdJL2ScC)** 참여 작품  
 > 생성형 AI를 활용한 개인 맞춤형 커리어 코치 챗봇 API
 
+## ✍ 회고
+> [(완전 무료 · GPU 없음) 극한의 가성비 추구로 그럴싸한 커리어 코치 챗봇 API 만들기 - 1](https://velog.io/@asdf-dev/Spring-boot-%EC%9E%A1%EC%BD%94%EB%A6%AC%EC%95%84-AI-Challenge-Back-End-%EC%99%84%EC%A0%84-%EB%AC%B4%EB%A3%8C-GPU-%EC%97%86%EC%9D%8C-%EA%B7%B9%ED%95%9C%EC%9D%98-%EA%B0%80%EC%84%B1%EB%B9%84-%EC%B6%94%EA%B5%AC%EB%A1%9C-%EA%B7%B8%EB%9F%B4%EC%8B%B8%ED%95%9C-%EC%BB%A4%EB%A6%AC%EC%96%B4-%EC%BD%94%EC%B9%98-%EC%B1%97%EB%B4%87-API-%EB%A7%8C%EB%93%A4%EA%B8%B0-1)
+
 ## 📝 프로젝트 개요
 
 구직자의 이력서 정보(경력, 직무, 기술 스킬)를 바탕으로 **생성형 AI**가 개인 맞춤형 면접 모의질문을 생성하고, 자기계발 학습 경로를 제안하여 구직자의 합격률 향상을 돕는 실시간 스트리밍 백엔드 API입니다.
