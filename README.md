@@ -586,17 +586,18 @@ DB_PASSWORD=1234
 
 OLLAMA_BASE_URL=http://ollama:11434
 OLLAMA_MODEL=benedict/linkbricks-llama3.1-korean:8b
+# 또는
+# OLLAMA_MODEL=gemma2:9b
 
-# GPU가 없는 환경이라면 아래 세 모델을 추천합니다.
-# 별도의 설정 없이 곧바로 확인할 수 있습니다. 모델 성능이 조금 떨어질 수 있습니다.
-# 느린 응답(10 ~ 12분), 정확도 높음
+## GPU가 없는 환경이라면 아래 세 모델을 추천합니다.
+## - 최소 사양 기준: RAM 8GB, CPU 4Core 
+## 느린 응답(10 ~ 12분), 정확도 높음
 # OLLAMA_MODEL=qwen2.5:7b-instruct 
-# 빠른 응답(4 ~ 5분), 정확도 낮음
+## 빠른 응답(2 ~ 3분), 정확도 낮음
 # OLLAMA_MODEL=llama3.2:3b 
-
-# 다음 모델 사용 시 HF_TOKEN 환경변수 설정이 필요합니다. 
-# https://huggingface.co/settings/tokens 에 접속해 토큰을 발급 받으세요. 
-# 빠른 응답(4 ~ 5분), 정확도 중간
+## 다음 모델 사용 시 HF_TOKEN 환경변수 설정이 필요합니다. 
+## https://huggingface.co/settings/tokens 에 접속해 토큰을 발급 받으세요. 
+## 빠른 응답(4 ~ 5분), 정확도 중간
 # OLLAMA_MODEL=llama3-instruct-kor-8b-q4km  
 # HF_TOKEN=<your_huggingface_token_here>
 
@@ -606,7 +607,7 @@ EOF
 # 3. Docker Compose로 전체 서비스 실행
 docker-compose up -d
 
-# 4. 모델 다운로드 완료 확인 (첫 다운로드 시 5-10분의 시간이 소요됩니다.)
+# 4. 모델 다운로드 완료 확인 (첫 다운로드 시 5-10분 정도의 시간이 소요됩니다.)
 docker-compose logs -f model-setup
 
 # 5. API 서비스 확인
