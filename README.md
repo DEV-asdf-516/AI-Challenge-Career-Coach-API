@@ -586,7 +586,7 @@ DB_PASSWORD=1234
 
 OLLAMA_BASE_URL=http://ollama:11434
 OLLAMA_MODEL=benedict/linkbricks-llama3.1-korean:8b
-# 또는
+## 또는
 # OLLAMA_MODEL=gemma2:9b
 
 ## GPU가 없는 환경이라면 아래 세 모델을 추천합니다.
